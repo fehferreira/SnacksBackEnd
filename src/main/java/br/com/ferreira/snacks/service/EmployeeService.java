@@ -38,7 +38,25 @@ public class EmployeeService {
 			throw new EntityPresentException();
 		}
 		
-		return repository.save(createEmployee);
+		return updateWorkingStatus(createEmployee);
+	}
+	
+	public Employee updateWorkingStatus(Employee createEmployee){
+		Employee working = findWorkingEmployee();
+		createEmployee.setNextEmployeeId(working.getNextEmployeeId());
+		createEmployee = repository.save(createEmployee);
+		working.setNextEmployeeId(createEmployee.getId());
+		return createEmployee;
+	}
+		
+	private Employee findWorkingEmployee() {
+		List<Employee> listEmployees = findAllEmployees();
+		for(Employee employee : listEmployees) {
+			if(employee.isWorking()) {
+				return repository.getById(employee.getId());
+			}
+		}
+		return repository.getById(listEmployees.get(listEmployees.size()-1).getId());
 	}
 	
 	

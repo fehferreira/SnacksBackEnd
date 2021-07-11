@@ -92,8 +92,11 @@ class EmployeeServiceTest {
 		EmployeeForm form = new EmployeeForm("Felipe Ferreira", false, false);
 		Employee createdEmployee = form.getEmployee();
 		createdEmployee.setId(1L);
+		Employee workingEmployee = new Employee(1L,"Nathalica Goncalves", true, false, null);
 	
 		when(repositoryMock.findByName(createdEmployee.getName())).thenReturn(Optional.empty());
+		when(repositoryMock.findAll()).thenReturn(this.listEmployees);
+		when(repositoryMock.getById(any())).thenReturn(workingEmployee);
 		when(repositoryMock.save(any())).thenReturn(createdEmployee);
 		
 		Employee returnedEmployee = service.createEmployee(form);
