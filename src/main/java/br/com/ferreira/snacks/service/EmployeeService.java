@@ -43,6 +43,10 @@ public class EmployeeService {
 	
 	public Employee updateWorkingStatus(Employee createEmployee){
 		Employee working = findWorkingEmployee();
+		
+		if(working == null)
+			return repository.save(createEmployee);
+		
 		createEmployee.setNextEmployeeId(working.getNextEmployeeId());
 		createEmployee = repository.save(createEmployee);
 		working.setNextEmployeeId(createEmployee.getId());
@@ -56,6 +60,8 @@ public class EmployeeService {
 				return repository.getById(employee.getId());
 			}
 		}
+		if(listEmployees.isEmpty())
+			return null;
 		return repository.getById(listEmployees.get(listEmployees.size()-1).getId());
 	}
 	
