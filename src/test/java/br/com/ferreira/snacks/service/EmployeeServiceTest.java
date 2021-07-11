@@ -88,7 +88,7 @@ class EmployeeServiceTest {
 	}
 	
 	@Test
-	void createEmployee_shouldReturnEmployeeCreated() {
+	void createEmployee_shouldReturnEmployeeCreated_notFoundWorkingEmployee() {
 		EmployeeForm form = new EmployeeForm("Felipe Ferreira", false, false);
 		Employee createdEmployee = form.getEmployee();
 		createdEmployee.setId(1L);
@@ -97,6 +97,26 @@ class EmployeeServiceTest {
 		when(repositoryMock.findByName(createdEmployee.getName())).thenReturn(Optional.empty());
 		when(repositoryMock.findAll()).thenReturn(this.listEmployees);
 		when(repositoryMock.getById(any())).thenReturn(workingEmployee);
+		when(repositoryMock.save(any())).thenReturn(createdEmployee);
+		
+		Employee returnedEmployee = service.createEmployee(form);
+		
+		assertEquals(returnedEmployee.getId(), createdEmployee.getId());
+		assertEquals(returnedEmployee.getName(), createdEmployee.getName());
+	}
+	
+	@Test
+	void createEmployee_shouldReturnEmployeeCreated_foundEmployeeWorking() {
+		EmployeeForm form = new EmployeeForm("Felipe Ferreira", false, false);
+		Employee createdEmployee = form.getEmployee();
+		createdEmployee.setId(1L);
+		Employee workingEmployee = this.listEmployees.get(1);
+		workingEmployee.setWorking(true);
+		
+	
+		when(repositoryMock.findByName(createdEmployee.getName())).thenReturn(Optional.empty());
+		when(repositoryMock.findAll()).thenReturn(this.listEmployees);
+		when(repositoryMock.getById(workingEmployee.getId())).thenReturn(workingEmployee);
 		when(repositoryMock.save(any())).thenReturn(createdEmployee);
 		
 		Employee returnedEmployee = service.createEmployee(form);
