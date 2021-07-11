@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +64,21 @@ public class EmployeeService {
 		if(listEmployees.isEmpty())
 			return null;
 		return repository.getById(listEmployees.get(listEmployees.size()-1).getId());
+	}
+
+	public Employee deleteEmployee(Long id) {
+		Employee deletedEmployee = findEmployeeDetails(id);
+		repository.delete(deletedEmployee);
+		return deletedEmployee;
+	}
+
+	public Employee updateEmployee(EmployeeForm updateForm, Long id) {
+		Employee employee = updateForm.getEmployee();
+		Employee updateEmployee = repository.getById(id);
+		
+		BeanUtils.copyProperties(employee, updateEmployee);
+		
+		return updateEmployee;
 	}
 	
 	

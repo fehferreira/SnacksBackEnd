@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ferreira.snacks.controller.form.EmployeeForm;
@@ -45,8 +44,8 @@ public class EmployeeController {
 	}
 	
 	@PutMapping
-	public Employee updateEmployee(@RequestBody @Valid EmployeeForm updateForm) {
-		return service.updateEmployee(updateForm);
+	public Employee updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeForm updateForm) {
+		return service.updateEmployee(updateForm, id);
 	}
 	
 }

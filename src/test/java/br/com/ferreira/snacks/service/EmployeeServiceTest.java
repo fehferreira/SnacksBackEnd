@@ -143,4 +143,41 @@ class EmployeeServiceTest {
 		Mockito.verify(repositoryMock).findByName(createdEmployee.getName());
 	}
 	
+	@Test
+	void deleteEmployee_shouldDeleteAEmployee() {
+		Employee employee = this.listEmployees.get(0);
+		when(repositoryMock.findById(employee.getId()))
+			.thenReturn(Optional.of(employee));
+		
+		service.deleteEmployee(employee.getId());
+		
+		Mockito.verify(repositoryMock).delete(employee);
+	}
+	
+	@Test
+	void deleteEmployee_shouldThrowException_EntityNotFound() {
+		when(repositoryMock.findById(any())).thenReturn(Optional.empty());
+		try {
+			service.deleteEmployee(2L);		
+		}catch (RuntimeException exception) {
+			assertThat(exception.getClass()).isEqualTo(EntityNotFoundException.class);
+		}
+		
+		Mockito.verify(repositoryMock).findById(any());
+	}
+	
+	@Test
+	void updateEmployee_shouldReturnAEmployeeUpdate() {
+		EmployeeForm updateForm = new EmployeeForm("Rogerio Marques", false, false);
+		Employee employeeForReturn = this.listEmployees.get(0);
+		
+		when(repositoryMock.getById(employeeForReturn.getId())).thenReturn(employeeForReturn);
+		
+		Employee returnedEmployee = service.updateEmployee(updateForm, employeeForReturn.getId());
+		
+		assertEquals(returnedEmployee.getId(), employeeForReturn.getId());
+		assertEquals(returnedEmployee.getName(), employeeForReturn.getName());
+	}
+	
+	
 }
