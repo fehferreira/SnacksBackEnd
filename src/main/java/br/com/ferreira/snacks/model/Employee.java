@@ -25,7 +25,7 @@ public class Employee {
 	private Long id;
 	
 	@NotNull(message = "This value cant be NULL")
-	private String nome;
+	private String name;
 	
 	private boolean isWorking = false;
 	
