@@ -126,4 +126,8 @@ public class EmployeeService {
 		nextWorkingEmployee.setWorking(true);
 		return nextWorkingEmployee.getId();
 	}
+
+	public void startWorkingStatus(Long id) {
+		repository.getById(id).setWorking(true);		
+	}
 }

@@ -34,7 +34,7 @@ public class SnacksWorkService {
 			throw new ImpossibleStartWorkException("Already start working!");
 		
 		Employee firstEmployee = employeeService.findAllEmployees().get(0);
-		
+		employeeService.startWorkingStatus(firstEmployee.getId());
 		return repository.save(new SnacksWork(firstEmployee.getId()));
 	}
 
@@ -42,7 +42,6 @@ public class SnacksWorkService {
 		List<SnacksWork> listWorks = findAllWorks();
 		if(listWorks.isEmpty())
 			throw new UpdateWorkingStatusException("Can't update status without a previous SnacksWork!");
-		
 
 		if(!listWorks.get(listWorks.size()-1).getDateStartWork().isBefore(LocalDateTime.now().minusDays(7L)))
 			throw new UpdateWorkingStatusException("Can't update status because this week's not over yet");
