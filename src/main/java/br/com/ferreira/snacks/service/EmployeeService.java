@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,9 +75,18 @@ public class EmployeeService {
 		Employee employee = updateForm.getEmployee();
 		Employee updateEmployee = repository.getById(id);
 		
-		BeanUtils.copyProperties(employee, updateEmployee);
+		copyProperties(employee, updateEmployee);
 		
 		return updateEmployee;
+	}
+
+	private void copyProperties(Employee employee, Employee updateEmployee) {
+		if(!employee.getName().equals(updateEmployee.getName()))
+			updateEmployee.setName(employee.getName());
+		if(employee.isWorking() != updateEmployee.isWorking())
+			updateEmployee.setWorking(employee.isWorking());
+		if(employee.isAusent() != updateEmployee.isAusent())
+			updateEmployee.setAusent(employee.isAusent());
 	}
 	
 	
