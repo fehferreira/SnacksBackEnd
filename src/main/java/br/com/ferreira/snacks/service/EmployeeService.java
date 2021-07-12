@@ -67,7 +67,7 @@ public class EmployeeService {
 		return updateEmployee;
 	}
 		
-	private Employee findWorkingEmployee() {
+	public Employee findWorkingEmployee() {
 		List<Employee> listEmployees = findAllEmployees();
 		for(Employee employee : listEmployees) {
 			if(employee.isWorking()) {

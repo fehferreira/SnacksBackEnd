@@ -1,6 +1,9 @@
 package br.com.ferreira.snacks.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -12,10 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.ferreira.snacks.model.Employee;
 import br.com.ferreira.snacks.model.SnacksWork;
 import br.com.ferreira.snacks.repository.SnacksWorkRepository;
 
@@ -24,6 +29,9 @@ class SnacksWorkServiceTest {
 
 	@Mock
 	private SnacksWorkRepository repositoryMock;
+	
+	@Mock
+	private EmployeeService serviceMock;
 	
 	@InjectMocks
 	private SnacksWorkService service;
@@ -52,5 +60,26 @@ class SnacksWorkServiceTest {
 		
 		assertThat(expectedListString).isEqualToIgnoringWhitespace(returnedListString);
 	}
+	
+	@Test
+	void startWork_callWhenListWorkIsEmpty_shouldReturnFirstSnacksWork() {
+		SnacksWork snacksWork = this.listWorks.get(0);
+		Employee employee = new Employee(5L, "Felipe Ferreira", false, false, null, null);
+		
+		when(repositoryMock.save(any())).thenReturn(snacksWork);
+		when(serviceMock.findAllEmployees()).thenReturn(Arrays.asList(employee));
+		when(serviceMock.findWorkingEmployee()).thenReturn(employee);
+		
+		SnacksWork actualWork = service.startWork();
+		
+		assertEquals(actualWork.getIdWork(), snacksWork.getIdWork());
+		assertEquals(actualWork.getDateStartWork().toLocalDate(), LocalDateTime.now().minusDays(7L).toLocalDate());
+		assertEquals(actualWork.getIdWorkingEmployee(), employee.getId());
+	}
+	
+	
+	
+	
+	
 	
 }

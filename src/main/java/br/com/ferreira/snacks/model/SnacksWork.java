@@ -24,6 +24,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SnacksWork {
 
+	
+
+	public SnacksWork(Long idWorkingEmployee) {
+		this.idWorkingEmployee = idWorkingEmployee;
+		this.dateStartWork = LocalDateTime.now();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idWork;
