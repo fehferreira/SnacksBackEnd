@@ -34,7 +34,7 @@ public class SnacksWorkService {
 			throw new ImpossibleStartWorkException("Already start working!");
 		
 		Employee firstEmployee = employeeService.findAllEmployees().get(0);
-		
+		employeeService.startWorkingStatus(firstEmployee.getId());
 		return repository.save(new SnacksWork(firstEmployee.getId()));
 	}
 

@@ -1,5 +1,7 @@
 package br.com.ferreira.snacks.controller;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class SnacksWorkController {
 	private SnacksWorkService service;
 	
 	@GetMapping(path = "/start")
+	@Transactional
 	public ResponseEntity<SnacksWork> startWork(){
 		try {
 			return ResponseEntity.ok(service.startWork());
