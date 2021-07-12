@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ferreira.snacks.exception.ImpossibleStartWorkException;
+import br.com.ferreira.snacks.exception.UpdateWorkingStatusException;
 import br.com.ferreira.snacks.model.SnacksWork;
 import br.com.ferreira.snacks.service.SnacksWorkService;
 
@@ -26,6 +27,16 @@ public class SnacksWorkController {
 		try {
 			return ResponseEntity.ok(service.startWork());
 		}catch(ImpossibleStartWorkException exception) {
+			return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping(path = "/update")
+	@Transactional
+	public ResponseEntity<SnacksWork> updateWork(){
+		try {
+			return ResponseEntity.ok(service.updateWork());
+		}catch(UpdateWorkingStatusException exception) {
 			return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
