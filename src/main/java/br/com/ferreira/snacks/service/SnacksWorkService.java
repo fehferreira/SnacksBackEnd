@@ -49,7 +49,7 @@ public class SnacksWorkService {
 		
 		Long nextEmployeeId = employeeService
 				.updateWorkingStatus(listWorks.get(listWorks.size()-1).getIdWorkingEmployee());
-		return repository.save(new SnacksWork(nextEmployeeId));;
+		return repository.save(new SnacksWork(nextEmployeeId));
 	}
 	
 }

@@ -111,4 +111,19 @@ public class EmployeeService {
 		if(nextEmployeeId != null)
 			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
 	}
+
+	public Long updateWorkingStatus(Long idWorkingEmployee) {
+		Employee actualWorkingEmployee = repository.getById(idWorkingEmployee);
+		
+		Employee nextWorkingEmployee = null;
+		
+		if(actualWorkingEmployee.getNextEmployeeId() == null)
+			nextWorkingEmployee = findAllEmployees().get(0);
+		else
+			nextWorkingEmployee = repository.getById(actualWorkingEmployee.getNextEmployeeId());
+		
+		actualWorkingEmployee.setWorking(false);
+		nextWorkingEmployee.setWorking(true);
+		return nextWorkingEmployee.getId();
+	}
 }
