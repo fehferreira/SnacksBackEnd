@@ -95,17 +95,12 @@ public class EmployeeService {
 			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
 	}
 	
-	
-	private Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
-		Employee working = findWorkingEmployee();
-		
-		if(working == null)
-			return repository.save(createEmployee);
-		
-		return updatePreviousNextEmployeeValues(createEmployee, working);
+	public Employee findLastEmployee() {
+		return findAllEmployees().stream().filter(e -> (e.getNextEmployeeId() == null) 
+														&& (e.getPreviousEmployeeId() != null)).findFirst().get();
 	}
 	
-	private Employee updatePreviousNextEmployeeValues(Employee updateEmployee, Employee workingEmployee) {
+	public Employee updatePreviousNextEmployeeValues(Employee updateEmployee, Employee workingEmployee) {
 		
 		if(updateEmployee.getId() == null)
 			updateEmployee = repository.save(updateEmployee);
@@ -129,5 +124,14 @@ public class EmployeeService {
 			updateEmployee.setWorking(employee.isWorking());
 		if(employee.isAusent() != updateEmployee.isAusent())
 			updateEmployee.setAusent(employee.isAusent());
+	}
+	
+	private Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
+		Employee working = findWorkingEmployee();
+		
+		if(working == null)
+			return repository.save(createEmployee);
+		
+		return updatePreviousNextEmployeeValues(createEmployee, working);
 	}
 }

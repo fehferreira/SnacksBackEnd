@@ -2,8 +2,10 @@ package br.com.ferreira.snacks.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -103,6 +105,18 @@ class SnacksWorkControllerTest {
 		String expectedListJSON = mapper.writeValueAsString(listWorks);
 		
 		assertThat(returnListJSON).isEqualToIgnoringWhitespace(expectedListJSON);
+	}
+	
+	@Test
+	void updateAusentStatus_shouldReturn200AndNewSnacksWork() throws Exception{
+		LocalDateTime nowDate = LocalDateTime.now();
+		when(serviceMock.updateAusentStatus(any())).thenReturn(new SnacksWork(2L,nowDate, 3L));
+		
+		mockMvc.perform(put(uri + "/ausent" + "/2"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.idWork", is(2)))
+				.andExpect(jsonPath("$.dateStartWork", is(nowDate.toString())))
+				.andExpect(jsonPath("$.idWorkingEmployee", is(3)));
 	}
 	
 }

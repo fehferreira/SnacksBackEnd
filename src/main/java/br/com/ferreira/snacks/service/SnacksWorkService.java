@@ -65,10 +65,13 @@ public class SnacksWorkService {
 		if(ausentEmployee.isAusent()) {
 			employeeService.updateRemoveEmployeeStatus(
 					ausentEmployee.getPreviousEmployeeId(), ausentEmployee.getNextEmployeeId());
-			employeeService.updateWorkingStatus(idEmployeeAusent);
+			if(ausentEmployee.isWorking())
+				employeeService.updateWorkingStatus(idEmployeeAusent);
 		}
 		
+		if(!ausentEmployee.isAusent())
+			employeeService.updatePreviousNextEmployeeValues(ausentEmployee, employeeService.findLastEmployee());
+		
 		return updateWork();
-	}
-	
+	}	
 }
