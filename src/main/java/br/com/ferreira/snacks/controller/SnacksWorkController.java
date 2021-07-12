@@ -1,5 +1,7 @@
 package br.com.ferreira.snacks.controller;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,11 @@ public class SnacksWorkController {
 
 	@Autowired
 	private SnacksWorkService service;
+	
+	@GetMapping
+	public ResponseEntity<List<SnacksWork>> findAllWorks(){
+		return ResponseEntity.ok(service.findAllWorks());
+	}
 	
 	@GetMapping(path = "/start")
 	@Transactional

@@ -1,14 +1,15 @@
 package br.com.ferreira.snacks.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.ferreira.snacks.exception.ImpossibleStartWorkException;
 import br.com.ferreira.snacks.exception.UpdateWorkingStatusException;
@@ -31,6 +35,9 @@ class SnacksWorkControllerTest {
 	
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@Autowired
+	private ObjectMapper mapper;
 
 	private final String uri = "/work";
 	
@@ -76,6 +83,26 @@ class SnacksWorkControllerTest {
 		mockMvc.perform(get(uri + "/update"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$", is("Can't update status without a previous SnacksWork!")));
+	}
+	
+	@Test
+	void findAllWorks_shouldReturn200AndListSnacksWork() throws Exception{
+		List<SnacksWork> listWorks =
+				Arrays.asList(new SnacksWork(1L,  LocalDateTime.now().minusDays(7L) , 1L),
+				new SnacksWork(2L, LocalDateTime.now().minusDays(5L) , 6L),
+				new SnacksWork(3L, LocalDateTime.now().minusDays(2L) , 35L),
+				new SnacksWork(4L, LocalDateTime.now() , 64L));
+		
+		when(serviceMock.findAllWorks()).thenReturn(listWorks);
+		
+		MvcResult returnResult = mockMvc.perform(get(uri))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		String returnListJSON = returnResult.getResponse().getContentAsString();
+		String expectedListJSON = mapper.writeValueAsString(listWorks);
+		
+		assertThat(returnListJSON).isEqualToIgnoringWhitespace(expectedListJSON);
 	}
 	
 }
