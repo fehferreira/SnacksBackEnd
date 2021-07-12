@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.ferreira.snacks.controller.form.EmployeeForm;
+import br.com.ferreira.snacks.exception.EntityPresentException;
 import br.com.ferreira.snacks.model.Employee;
 import br.com.ferreira.snacks.service.EmployeeService;
 
@@ -89,6 +92,21 @@ class EmployeeControllerTest {
     }
     
     @Test
+    void createEmployee_shouldReturnBadRequest_EmployeeExistOnDB() throws Exception {
+    	EmployeeForm form = new EmployeeForm("Felipe Ferreira", false, false);
+    	Employee employeeCreated = form.getEmployee();
+    	employeeCreated.setId(1L);
+    	
+    	when(serviceMock.createEmployee(any()))
+    		.thenThrow(EntityPresentException.class);
+    
+    	mockMvc.perform(post(uri)
+    					.contentType(MediaType.APPLICATION_JSON)
+    					.content(mapper.writeValueAsString(form)))
+    			.andExpect(status().isBadRequest());
+    }
+    
+    @Test
     void deleteEmployee_shouldReturnEmployeeDeleted() throws Exception {
     	Employee employeeDeleted = this.listEmployee.get(0);
     	
@@ -100,6 +118,18 @@ class EmployeeControllerTest {
     			.andExpect(status().isOk())
     			.andExpect(jsonPath("$.id", is(employeeDeleted.getId().intValue())))
     			.andExpect(jsonPath("$.name", is(employeeDeleted.getName())));
+    }
+    
+    @Test
+    void deleteEmployee_shouldReturnBadRequest_EmployeeNotFound() throws Exception {
+    	Employee employeeDeleted = this.listEmployee.get(0);
+    	
+    	when(serviceMock.deleteEmployee(any()))
+    			.thenThrow(EntityNotFoundException.class);
+    	
+    	mockMvc.perform(delete(uri + "/" + employeeDeleted.getId().toString())
+    					.contentType(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isBadRequest());
     }
     
     @Test
@@ -119,14 +149,23 @@ class EmployeeControllerTest {
     			.andExpect(status().isOk())
     			.andExpect(jsonPath("$.id", is(oldEmployee.getId().intValue())))
     			.andExpect(jsonPath("$.name", is(updateEmployee.getName())));
-    	
     }
     
-    
-    
-    
-    
-    
-    
+    @Test
+    void updateEmployee_shouldReturnBadRequest_EntityNotFound() throws Exception {
+    	EmployeeForm updateForm = new EmployeeForm("Felipe Ferreira", false, false);
+    	Employee oldEmployee = this.listEmployee.get(2);
+    	Employee updateEmployee = updateForm.getEmployee();
+    	updateEmployee.setId(oldEmployee.getId());
+    	
+    	
+    	when(serviceMock.updateEmployee(any(), any()))
+    			.thenThrow(EntityNotFoundException.class);
+    	
+    	mockMvc.perform(put(uri + "/" + oldEmployee.getId().toString())
+    					.contentType(MediaType.APPLICATION_JSON)
+    					.content(mapper.writeValueAsString(updateForm)))
+    			.andExpect(status().isBadRequest());
+    }
     
 }

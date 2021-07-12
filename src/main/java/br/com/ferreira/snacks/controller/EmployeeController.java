@@ -3,10 +3,12 @@ package br.com.ferreira.snacks.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ferreira.snacks.controller.dto.EmployeeDTO;
 import br.com.ferreira.snacks.controller.form.EmployeeForm;
+import br.com.ferreira.snacks.exception.EntityPresentException;
 import br.com.ferreira.snacks.service.EmployeeService;
 
 @RestController
@@ -36,17 +39,30 @@ public class EmployeeController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody @Valid EmployeeForm form) {
-		return ResponseEntity.ok(new EmployeeDTO(service.createEmployee(form)));
+		try {
+			return ResponseEntity.ok(new EmployeeDTO(service.createEmployee(form)));
+		}catch (EntityPresentException exception) {
+			return new ResponseEntity(exception, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<EmployeeDTO> deleteEmployee(@PathVariable Long id) {
-		return ResponseEntity.ok(new EmployeeDTO(service.deleteEmployee(id)));
+		try {
+			return ResponseEntity.ok(new EmployeeDTO(service.deleteEmployee(id)));
+		}catch (EntityNotFoundException exception) {
+			return new ResponseEntity(exception, HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeForm updateForm) {
-		return ResponseEntity.ok(new EmployeeDTO(service.updateEmployee(updateForm, id)));
+		try {
+			return ResponseEntity.ok(new EmployeeDTO(service.updateEmployee(updateForm, id)));
+		}catch (EntityNotFoundException exception) {
+			return new ResponseEntity(exception, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 }
