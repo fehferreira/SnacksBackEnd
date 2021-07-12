@@ -18,6 +18,7 @@ public class EmployeeDTO {
 	private String name;
 	private boolean isWorking = false;
 	private boolean isAusent = false;
+	private Long previousEmployeeId;
 	private Long nextEmployeeId;
 	
 	public EmployeeDTO(Employee employee) {

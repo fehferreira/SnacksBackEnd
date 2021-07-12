@@ -50,11 +50,11 @@ public class EmployeeService {
 		createEmployee.setNextEmployeeId(working.getNextEmployeeId());
 		createEmployee = repository.save(createEmployee);
 		working.setNextEmployeeId(createEmployee.getId());
+		createEmployee.setPreviousEmployeeId(working.getId());
 		
 		if(createEmployee.getNextEmployeeId() != null) {
 			Employee nextEmployee = repository.getById(createEmployee.getNextEmployeeId());
 			nextEmployee.setPreviousEmployeeId(createEmployee.getId());
-			createEmployee.setPreviousEmployeeId(working.getId());
 		}
 		
 		return createEmployee;
