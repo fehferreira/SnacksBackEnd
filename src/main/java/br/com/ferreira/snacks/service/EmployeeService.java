@@ -68,7 +68,33 @@ public class EmployeeService {
 		
 		return updateEmployee;
 	}
+	
+	public Long updateWorkingStatus(Long idWorkingEmployee) {
+		Employee actualWorkingEmployee = repository.getById(idWorkingEmployee);
+		
+		Employee nextWorkingEmployee = null;
+		
+		if(actualWorkingEmployee.getNextEmployeeId() == null)
+			nextWorkingEmployee = findAllEmployees().get(0);
+		else
+			nextWorkingEmployee = repository.getById(actualWorkingEmployee.getNextEmployeeId());
+		
+		actualWorkingEmployee.setWorking(false);
+		nextWorkingEmployee.setWorking(true);
+		return nextWorkingEmployee.getId();
+	}
 
+	public void startWorkingStatus(Long id) {
+		repository.getById(id).setWorking(true);		
+	}
+	
+	public void updateRemoveEmployeeStatus(Long previousEmployeeId, Long nextEmployeeId) {
+		if(previousEmployeeId != null)
+			repository.getById(previousEmployeeId).setNextEmployeeId(nextEmployeeId);
+		if(nextEmployeeId != null)
+			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
+	}
+	
 	
 	private Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
 		Employee working = findWorkingEmployee();
@@ -103,31 +129,5 @@ public class EmployeeService {
 			updateEmployee.setWorking(employee.isWorking());
 		if(employee.isAusent() != updateEmployee.isAusent())
 			updateEmployee.setAusent(employee.isAusent());
-	}
-	
-	private void updateRemoveEmployeeStatus(Long previousEmployeeId, Long nextEmployeeId) {
-		if(previousEmployeeId != null)
-			repository.getById(previousEmployeeId).setNextEmployeeId(nextEmployeeId);
-		if(nextEmployeeId != null)
-			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
-	}
-
-	public Long updateWorkingStatus(Long idWorkingEmployee) {
-		Employee actualWorkingEmployee = repository.getById(idWorkingEmployee);
-		
-		Employee nextWorkingEmployee = null;
-		
-		if(actualWorkingEmployee.getNextEmployeeId() == null)
-			nextWorkingEmployee = findAllEmployees().get(0);
-		else
-			nextWorkingEmployee = repository.getById(actualWorkingEmployee.getNextEmployeeId());
-		
-		actualWorkingEmployee.setWorking(false);
-		nextWorkingEmployee.setWorking(true);
-		return nextWorkingEmployee.getId();
-	}
-
-	public void startWorkingStatus(Long id) {
-		repository.getById(id).setWorking(true);		
 	}
 }
