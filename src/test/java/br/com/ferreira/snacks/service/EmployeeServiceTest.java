@@ -151,7 +151,7 @@ class EmployeeServiceTest {
 	
 	@Test
 	void deleteEmployee_shouldDeleteAEmployee() {
-		Employee employee = this.listEmployees.get(0);
+		Employee employee = new Employee(1L, "Felipe Ferreira", false, false, null, null);
 		when(repositoryMock.findById(employee.getId()))
 			.thenReturn(Optional.of(employee));
 		
