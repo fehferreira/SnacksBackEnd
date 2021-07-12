@@ -38,10 +38,10 @@ public class EmployeeService {
 			throw new EntityPresentException();
 		}
 		
-		return updateWorkingStatus(createEmployee);
+		return updateEmployeeStatus(createEmployee);
 	}
 	
-	public Employee updateWorkingStatus(Employee createEmployee){
+	public Employee updateEmployeeStatus(Employee createEmployee){
 		Employee working = findWorkingEmployee();
 		
 		if(working == null)
@@ -74,8 +74,16 @@ public class EmployeeService {
 
 	public Employee deleteEmployee(Long id) {
 		Employee deletedEmployee = findEmployeeDetails(id);
+		updateRemoveEmployeeStatus(deletedEmployee.getPreviousEmployeeId(), deletedEmployee.getNextEmployeeId());
 		repository.delete(deletedEmployee);
 		return deletedEmployee;
+	}
+
+	private void updateRemoveEmployeeStatus(Long previousEmployeeId, Long nextEmployeeId) {
+		if(previousEmployeeId != null)
+			repository.getById(previousEmployeeId).setNextEmployeeId(nextEmployeeId);
+		if(nextEmployeeId != null)
+			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
 	}
 
 	public Employee updateEmployee(EmployeeForm updateForm, Long id) {
