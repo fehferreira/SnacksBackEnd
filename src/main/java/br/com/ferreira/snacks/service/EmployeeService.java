@@ -50,7 +50,7 @@ public class EmployeeService {
 		}
 		if(listEmployees.isEmpty())
 			return null;
-		return repository.getById(listEmployees.get(listEmployees.size()-1).getId());
+		return repository.getById(findLastEmployee().getId());
 	}
 
 	public Employee deleteEmployee(Long id) {

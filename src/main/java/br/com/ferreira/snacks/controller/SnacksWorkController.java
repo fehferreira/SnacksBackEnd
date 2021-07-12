@@ -51,6 +51,7 @@ public class SnacksWorkController {
 	}
 	
 	@PutMapping(path = "/ausent/{idEmployeeAusent}")
+	@Transactional
 	public ResponseEntity<SnacksWork> updateAusentStatus(@PathVariable Long idEmployeeAusent){
 		try {
 			return ResponseEntity.ok(service.updateAusentStatus(idEmployeeAusent));
