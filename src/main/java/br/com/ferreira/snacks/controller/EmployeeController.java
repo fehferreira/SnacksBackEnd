@@ -37,13 +37,12 @@ public class EmployeeController {
 		return service.createEmployee(form);
 	}
 	
-	@DeleteMapping
-	@GetMapping("/${id}")
+	@DeleteMapping("/{id}")
 	public Employee deleteEmployee(@PathVariable Long id) {
 		return service.deleteEmployee(id);
 	}
 	
-	@PutMapping
+	@PutMapping("/{id}")
 	public Employee updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeForm updateForm) {
 		return service.updateEmployee(updateForm, id);
 	}

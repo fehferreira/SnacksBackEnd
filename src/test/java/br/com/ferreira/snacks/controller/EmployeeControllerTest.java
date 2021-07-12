@@ -2,8 +2,12 @@ package br.com.ferreira.snacks.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,6 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.ferreira.snacks.controller.form.EmployeeForm;
 import br.com.ferreira.snacks.model.Employee;
 import br.com.ferreira.snacks.service.EmployeeService;
 
@@ -36,7 +41,7 @@ class EmployeeControllerTest {
     private ObjectMapper mapper;
     
     @MockBean
-    private EmployeeService service;
+    private EmployeeService serviceMock;
 	
     private final String uri = "/employee";
 
@@ -55,7 +60,7 @@ class EmployeeControllerTest {
     void findAllEmployees_shouldReturn200_ListEmployee() throws Exception {
     	String expectedReturnJSON = mapper.writeValueAsString(listEmployee);
     	
-    	when(service.findAllEmployees()).thenReturn(this.listEmployee);
+    	when(serviceMock.findAllEmployees()).thenReturn(this.listEmployee);
     	
     	MvcResult returnedRequest = mockMvc.perform(get(uri)
     					.contentType(MediaType.APPLICATION_JSON))
@@ -66,5 +71,62 @@ class EmployeeControllerTest {
     	
     	assertThat(returnedStringJSON).isEqualToIgnoringWhitespace(expectedReturnJSON);
     }
+    
+    @Test
+    void createEmployee_shouldReturn200AndEmployeeCreated() throws Exception {
+    	EmployeeForm form = new EmployeeForm("Felipe Ferreira", false, false);
+    	Employee employeeCreated = form.getEmployee();
+    	employeeCreated.setId(1L);
+    	
+    	when(serviceMock.createEmployee(any())).thenReturn(employeeCreated);
+    
+    	mockMvc.perform(post(uri)
+    					.contentType(MediaType.APPLICATION_JSON)
+    					.content(mapper.writeValueAsString(form)))
+    			.andExpect(status().isOk())
+    			.andExpect(jsonPath("$.id", is(employeeCreated.getId().intValue())))
+    			.andExpect(jsonPath("$.name", is(employeeCreated.getName())));
+    }
+    
+    @Test
+    void deleteEmployee_shouldReturnEmployeeDeleted() throws Exception {
+    	Employee employeeDeleted = this.listEmployee.get(0);
+    	
+    	when(serviceMock.findEmployeeDetails(employeeDeleted.getId())).thenReturn(employeeDeleted);
+    	when(serviceMock.deleteEmployee(any())).thenReturn(employeeDeleted);
+    	
+    	mockMvc.perform(delete(uri + "/" + employeeDeleted.getId().toString())
+    					.contentType(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(jsonPath("$.id", is(employeeDeleted.getId().intValue())))
+    			.andExpect(jsonPath("$.name", is(employeeDeleted.getName())));
+    }
+    
+    @Test
+    void updateEmployee_shouldReturnUpdatedEmployee() throws Exception {
+    	EmployeeForm updateForm = new EmployeeForm("Felipe Ferreira", false, false);
+    	Employee oldEmployee = this.listEmployee.get(2);
+    	Employee updateEmployee = updateForm.getEmployee();
+    	updateEmployee.setId(oldEmployee.getId());
+    	
+    	
+    	when(serviceMock.updateEmployee(any(), any()))
+    			.thenReturn(updateEmployee);
+    	
+    	mockMvc.perform(put(uri + "/" + oldEmployee.getId().toString())
+    					.contentType(MediaType.APPLICATION_JSON)
+    					.content(mapper.writeValueAsString(updateForm)))
+    			.andExpect(status().isOk())
+    			.andExpect(jsonPath("$.id", is(oldEmployee.getId().intValue())))
+    			.andExpect(jsonPath("$.name", is(updateEmployee.getName())));
+    	
+    }
+    
+    
+    
+    
+    
+    
+    
     
 }
