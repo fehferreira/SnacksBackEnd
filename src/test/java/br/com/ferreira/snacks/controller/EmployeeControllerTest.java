@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.ferreira.snacks.controller.dto.EmployeeDTO;
 import br.com.ferreira.snacks.controller.form.EmployeeForm;
 import br.com.ferreira.snacks.exception.EntityPresentException;
 import br.com.ferreira.snacks.model.Employee;
@@ -52,16 +54,23 @@ class EmployeeControllerTest {
     
     @BeforeEach
     void beforeEach() {
-    	Employee employee1 = new Employee(1L,"Felipe Ferreira", false, false, null);
-    	Employee employee2 = new Employee(5L,"Nathalia Goncalves", false, false, employee1.getId());
-    	Employee employee3 = new Employee(7L,"Rogerio Marinho", false, false, employee2.getId());
+    	Employee employee1 = new Employee(1L,"Felipe Ferreira", false, false,null, null);
+    	Employee employee2 = new Employee(5L,"Nathalia Goncalves", false, false,null,null);
+    	Employee employee3 = new Employee(7L,"Rogerio Marinho", false, false,null, null);
+    	
+    	employee1.setNextEmployeeId(employee2.getId());
+    	employee2.setNextEmployeeId(employee3.getId());
+    	
+    	employee3.setPreviousEmployeeId(employee2.getId());
+    	employee2.setPreviousEmployeeId(employee1.getId());
     	
     	this.listEmployee = Arrays.asList(employee1, employee2, employee3);
     }
     
     @Test 
     void findAllEmployees_shouldReturn200_ListEmployee() throws Exception {
-    	String expectedReturnJSON = mapper.writeValueAsString(listEmployee);
+    	String expectedReturnJSON = mapper.writeValueAsString(
+    			listEmployee.stream().map(EmployeeDTO::new).collect(Collectors.toList()));
     	
     	when(serviceMock.findAllEmployees()).thenReturn(this.listEmployee);
     	

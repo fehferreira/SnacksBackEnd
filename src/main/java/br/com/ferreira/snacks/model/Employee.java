@@ -31,5 +31,7 @@ public class Employee {
 	
 	private boolean isAusent = false;
 	
+	private Long previousEmployeeId;
+	
 	private Long nextEmployeeId;
 }

@@ -17,7 +17,7 @@ public class EmployeeForm {
 	private boolean isAusent = false;
 	
 	public Employee getEmployee() {
-		return new Employee(null, this.name, this.isWorking, this.isAusent, null);
+		return new Employee(null, this.name, this.isWorking, this.isAusent,null, null);
 	}
 	
 }

@@ -42,10 +42,16 @@ class EmployeeServiceTest {
 
 	@BeforeEach
 	void beforeEach() {
-		Employee employee1 = new Employee(1L,"Felipe Ferreira", false, false, null);
-		Employee employee2 = new Employee(15L,"Felipe Ferreira", false, false, employee1.getId());
-		Employee employee3 = new Employee(34L,"Felipe Ferreira", false, false, employee2.getId());
-	
+    	Employee employee1 = new Employee(1L,"Felipe Ferreira", false, false,null, null);
+    	Employee employee2 = new Employee(5L,"Nathalia Goncalves", false, false,null,null);
+    	Employee employee3 = new Employee(7L,"Rogerio Marinho", false, false,null, null);
+    	
+    	employee1.setNextEmployeeId(employee2.getId());
+    	employee2.setNextEmployeeId(employee3.getId());
+    	
+    	employee3.setPreviousEmployeeId(employee2.getId());
+    	employee2.setPreviousEmployeeId(employee1.getId());
+    	
 		this.listEmployees = Arrays.asList(employee1,employee2,employee3);
 	}
 	
@@ -92,7 +98,7 @@ class EmployeeServiceTest {
 		EmployeeForm form = new EmployeeForm("Felipe Ferreira", false, false);
 		Employee createdEmployee = form.getEmployee();
 		createdEmployee.setId(1L);
-		Employee workingEmployee = new Employee(1L,"Nathalica Goncalves", true, false, null);
+		Employee workingEmployee = new Employee(1L,"Nathalica Goncalves", true, false,null, null);
 	
 		when(repositoryMock.findByName(createdEmployee.getName())).thenReturn(Optional.empty());
 		when(repositoryMock.findAll()).thenReturn(this.listEmployees);
