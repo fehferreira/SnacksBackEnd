@@ -25,3 +25,5 @@ Project to control employees responsible for snacks. The control works like a qu
 *[Lombok](https://projectlombok.org/) - Version 1.18.20
 
 *[H2 Databse](https://www.h2database.com/html/main.html) - Version 1.4.2
+
+*[JUnit 5 - Jupiter](https://junit.org/junit5/) - Version 2.5.2
