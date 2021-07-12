@@ -57,6 +57,7 @@ public class EmployeeController {
 	}
 	
 	@PutMapping("/{id}")
+	@Transactional
 	public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeForm updateForm) {
 		try {
 			return ResponseEntity.ok(new EmployeeDTO(service.updateEmployee(updateForm, id)));
