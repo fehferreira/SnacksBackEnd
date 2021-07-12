@@ -38,26 +38,33 @@ public class EmployeeService {
 			throw new EntityPresentException();
 		}
 		
-		return updateEmployeeStatus(createEmployee);
+		return includeNewEmployeeOnLinkedList(createEmployee);
 	}
 	
-	public Employee updateEmployeeStatus(Employee createEmployee){
+	public Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
 		Employee working = findWorkingEmployee();
 		
 		if(working == null)
 			return repository.save(createEmployee);
 		
-		createEmployee.setNextEmployeeId(working.getNextEmployeeId());
-		createEmployee = repository.save(createEmployee);
-		working.setNextEmployeeId(createEmployee.getId());
-		createEmployee.setPreviousEmployeeId(working.getId());
+		return updateWorkingStatus(createEmployee, working);
+	}
+	
+	public Employee updateWorkingStatus(Employee updateEmployee, Employee workingEmployee) {
 		
-		if(createEmployee.getNextEmployeeId() != null) {
-			Employee nextEmployee = repository.getById(createEmployee.getNextEmployeeId());
-			nextEmployee.setPreviousEmployeeId(createEmployee.getId());
+		if(updateEmployee.getId() == null)
+			updateEmployee = repository.save(updateEmployee);
+		
+		updateEmployee.setNextEmployeeId(workingEmployee.getNextEmployeeId());
+		workingEmployee.setNextEmployeeId(updateEmployee.getId());
+		updateEmployee.setPreviousEmployeeId(workingEmployee.getId());
+		
+		if(updateEmployee.getNextEmployeeId() != null) {
+			Employee nextEmployee = repository.getById(updateEmployee.getNextEmployeeId());
+			nextEmployee.setPreviousEmployeeId(updateEmployee.getId());
 		}
 		
-		return createEmployee;
+		return updateEmployee;
 	}
 		
 	private Employee findWorkingEmployee() {
