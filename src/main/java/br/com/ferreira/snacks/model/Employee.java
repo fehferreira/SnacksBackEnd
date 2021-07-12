@@ -23,6 +23,17 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Employee {
 
+	public Employee(Long id, @NotNull(message = "This value cant be NULL") String name,
+					boolean isWorking,boolean isAusent,
+					Long previousEmployeeId, Long nextEmployeeId) {
+		this.id = id;
+		this.name = name;
+		this.isWorking = isWorking;
+		this.isAusent = isAusent;
+		this.previousEmployeeId = previousEmployeeId;
+		this.nextEmployeeId = nextEmployeeId;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
