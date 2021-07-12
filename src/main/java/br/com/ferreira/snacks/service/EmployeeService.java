@@ -19,17 +19,6 @@ public class EmployeeService {
 	@Autowired
 	private EmployeeRepository repository;
 	
-	public List<Employee> findAllEmployees(){
-		return repository.findAll(); 
-	}
-	
-	public Employee findEmployeeDetails(Long idEmployee) {
-		Optional<Employee> optional = repository.findById(idEmployee);
-		if(optional.isPresent())
-			return optional.get();
-		throw new EntityNotFoundException();
-	}
-	
 	public Employee createEmployee(EmployeeForm form) {
 		Employee createEmployee = form.getEmployee();
 	
@@ -41,30 +30,15 @@ public class EmployeeService {
 		return includeNewEmployeeOnLinkedList(createEmployee);
 	}
 	
-	public Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
-		Employee working = findWorkingEmployee();
-		
-		if(working == null)
-			return repository.save(createEmployee);
-		
-		return updateWorkingStatus(createEmployee, working);
+	public List<Employee> findAllEmployees(){
+		return repository.findAll(); 
 	}
 	
-	public Employee updateWorkingStatus(Employee updateEmployee, Employee workingEmployee) {
-		
-		if(updateEmployee.getId() == null)
-			updateEmployee = repository.save(updateEmployee);
-		
-		updateEmployee.setNextEmployeeId(workingEmployee.getNextEmployeeId());
-		workingEmployee.setNextEmployeeId(updateEmployee.getId());
-		updateEmployee.setPreviousEmployeeId(workingEmployee.getId());
-		
-		if(updateEmployee.getNextEmployeeId() != null) {
-			Employee nextEmployee = repository.getById(updateEmployee.getNextEmployeeId());
-			nextEmployee.setPreviousEmployeeId(updateEmployee.getId());
-		}
-		
-		return updateEmployee;
+	public Employee findEmployeeDetails(Long idEmployee) {
+		Optional<Employee> optional = repository.findById(idEmployee);
+		if(optional.isPresent())
+			return optional.get();
+		throw new EntityNotFoundException();
 	}
 		
 	public Employee findWorkingEmployee() {
@@ -86,13 +60,6 @@ public class EmployeeService {
 		return deletedEmployee;
 	}
 
-	private void updateRemoveEmployeeStatus(Long previousEmployeeId, Long nextEmployeeId) {
-		if(previousEmployeeId != null)
-			repository.getById(previousEmployeeId).setNextEmployeeId(nextEmployeeId);
-		if(nextEmployeeId != null)
-			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
-	}
-
 	public Employee updateEmployee(EmployeeForm updateForm, Long id) {
 		Employee employee = updateForm.getEmployee();
 		Employee updateEmployee = repository.getById(id);
@@ -102,6 +69,33 @@ public class EmployeeService {
 		return updateEmployee;
 	}
 
+	
+	private Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
+		Employee working = findWorkingEmployee();
+		
+		if(working == null)
+			return repository.save(createEmployee);
+		
+		return updatePreviousNextEmployeeValues(createEmployee, working);
+	}
+	
+	private Employee updatePreviousNextEmployeeValues(Employee updateEmployee, Employee workingEmployee) {
+		
+		if(updateEmployee.getId() == null)
+			updateEmployee = repository.save(updateEmployee);
+		
+		updateEmployee.setNextEmployeeId(workingEmployee.getNextEmployeeId());
+		workingEmployee.setNextEmployeeId(updateEmployee.getId());
+		updateEmployee.setPreviousEmployeeId(workingEmployee.getId());
+		
+		if(updateEmployee.getNextEmployeeId() != null) {
+			Employee nextEmployee = repository.getById(updateEmployee.getNextEmployeeId());
+			nextEmployee.setPreviousEmployeeId(updateEmployee.getId());
+		}
+		
+		return updateEmployee;
+	}
+	
 	private void copyProperties(Employee employee, Employee updateEmployee) {
 		if(!employee.getName().equals(updateEmployee.getName()))
 			updateEmployee.setName(employee.getName());
@@ -111,9 +105,10 @@ public class EmployeeService {
 			updateEmployee.setAusent(employee.isAusent());
 	}
 	
-	
-	
-	
-	
-	
+	private void updateRemoveEmployeeStatus(Long previousEmployeeId, Long nextEmployeeId) {
+		if(previousEmployeeId != null)
+			repository.getById(previousEmployeeId).setNextEmployeeId(nextEmployeeId);
+		if(nextEmployeeId != null)
+			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
+	}
 }
