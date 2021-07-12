@@ -118,6 +118,7 @@ class EmployeeServiceTest {
 		createdEmployee.setId(1L);
 		Employee workingEmployee = this.listEmployees.get(1);
 		workingEmployee.setWorking(true);
+		workingEmployee.setNextEmployeeId(null);
 		
 	
 		when(repositoryMock.findByName(createdEmployee.getName())).thenReturn(Optional.empty());
