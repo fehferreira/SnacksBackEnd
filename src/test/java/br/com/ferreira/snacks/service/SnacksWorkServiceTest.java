@@ -1,7 +1,6 @@
 package br.com.ferreira.snacks.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -75,6 +74,24 @@ class SnacksWorkServiceTest {
 		assertEquals(actualWork.getIdWork(), snacksWork.getIdWork());
 		assertEquals(actualWork.getDateStartWork().toLocalDate(), LocalDateTime.now().minusDays(7L).toLocalDate());
 		assertEquals(actualWork.getIdWorkingEmployee(), employee.getId());
+	}
+	
+	@Test
+	void updateWork_callAfter7DaysOfLastWork_shouldReturnNewSnacksWork() {
+		List<SnacksWork> listWorks = Arrays.asList(this.listWorks.get(0));
+		Employee actualEmployee = new Employee(5L, "Felipe Ferreira", true, false, null, 6L);
+		Employee nextEmployee = new Employee(6L,"Ricardo Maldonado", true, false, null, 7L);
+		SnacksWork newSnacksWork = new SnacksWork(2L, LocalDateTime.now(), nextEmployee.getId());
+		
+		when(repositoryMock.findAll()).thenReturn(listWorks);
+		when(serviceMock.updateWorkingStatus(actualEmployee.getId())).thenReturn(nextEmployee.getId());
+		when(repositoryMock.save(any())).thenReturn(newSnacksWork);
+		
+		SnacksWork newWork = service.updateWork();
+		
+		assertEquals(newWork.getIdWork(), 2L);
+		assertEquals(newWork.getDateStartWork(), newSnacksWork.getDateStartWork());
+		assertEquals(newWork.getIdWorkingEmployee(), 6L);
 	}
 	
 	
