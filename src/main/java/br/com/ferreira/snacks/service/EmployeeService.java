@@ -96,8 +96,11 @@ public class EmployeeService {
 	}
 	
 	public Employee findLastEmployee() {
-		return findAllEmployees().stream().filter(e -> (e.getNextEmployeeId() == null) 
-														&& (e.getPreviousEmployeeId() != null)).findFirst().get();
+		List<Employee> listEmployees = findAllEmployees();
+		Optional<Employee> optional = listEmployees.stream().filter(e -> (e.getNextEmployeeId() == null) && 
+				(e.getPreviousEmployeeId() != null)).findFirst();
+		
+		return optional.isPresent() ? optional.get() : listEmployees.get(listEmployees.size()-1);
 	}
 	
 	public Employee updatePreviousNextEmployeeValues(Employee updateEmployee, Employee workingEmployee) {
