@@ -50,7 +50,7 @@ public class EmployeeService {
 		}
 		if(listEmployees.isEmpty())
 			return null;
-		return repository.getById(listEmployees.get(listEmployees.size()-1).getId());
+		return repository.getById(findLastEmployee().getId());
 	}
 
 	public Employee deleteEmployee(Long id) {
@@ -68,18 +68,42 @@ public class EmployeeService {
 		
 		return updateEmployee;
 	}
-
 	
-	private Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
-		Employee working = findWorkingEmployee();
+	public Long updateWorkingStatus(Long idWorkingEmployee) {
+		Employee actualWorkingEmployee = repository.getById(idWorkingEmployee);
 		
-		if(working == null)
-			return repository.save(createEmployee);
+		Employee nextWorkingEmployee = null;
 		
-		return updatePreviousNextEmployeeValues(createEmployee, working);
+		if(actualWorkingEmployee.getNextEmployeeId() == null)
+			nextWorkingEmployee = findAllEmployees().get(0);
+		else
+			nextWorkingEmployee = repository.getById(actualWorkingEmployee.getNextEmployeeId());
+		
+		actualWorkingEmployee.setWorking(false);
+		nextWorkingEmployee.setWorking(true);
+		return nextWorkingEmployee.getId();
+	}
+
+	public void startWorkingStatus(Long id) {
+		repository.getById(id).setWorking(true);		
 	}
 	
-	private Employee updatePreviousNextEmployeeValues(Employee updateEmployee, Employee workingEmployee) {
+	public void updateRemoveEmployeeStatus(Long previousEmployeeId, Long nextEmployeeId) {
+		if(previousEmployeeId != null)
+			repository.getById(previousEmployeeId).setNextEmployeeId(nextEmployeeId);
+		if(nextEmployeeId != null)
+			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
+	}
+	
+	public Employee findLastEmployee() {
+		List<Employee> listEmployees = findAllEmployees();
+		Optional<Employee> optional = listEmployees.stream().filter(e -> (e.getNextEmployeeId() == null) && 
+				(e.getPreviousEmployeeId() != null)).findFirst();
+		
+		return optional.isPresent() ? optional.get() : listEmployees.get(listEmployees.size()-1);
+	}
+	
+	public Employee updatePreviousNextEmployeeValues(Employee updateEmployee, Employee workingEmployee) {
 		
 		if(updateEmployee.getId() == null)
 			updateEmployee = repository.save(updateEmployee);
@@ -105,29 +129,12 @@ public class EmployeeService {
 			updateEmployee.setAusent(employee.isAusent());
 	}
 	
-	private void updateRemoveEmployeeStatus(Long previousEmployeeId, Long nextEmployeeId) {
-		if(previousEmployeeId != null)
-			repository.getById(previousEmployeeId).setNextEmployeeId(nextEmployeeId);
-		if(nextEmployeeId != null)
-			repository.getById(nextEmployeeId).setPreviousEmployeeId(previousEmployeeId);
-	}
-
-	public Long updateWorkingStatus(Long idWorkingEmployee) {
-		Employee actualWorkingEmployee = repository.getById(idWorkingEmployee);
+	private Employee includeNewEmployeeOnLinkedList(Employee createEmployee){
+		Employee working = findWorkingEmployee();
 		
-		Employee nextWorkingEmployee = null;
+		if(working == null)
+			return repository.save(createEmployee);
 		
-		if(actualWorkingEmployee.getNextEmployeeId() == null)
-			nextWorkingEmployee = findAllEmployees().get(0);
-		else
-			nextWorkingEmployee = repository.getById(actualWorkingEmployee.getNextEmployeeId());
-		
-		actualWorkingEmployee.setWorking(false);
-		nextWorkingEmployee.setWorking(true);
-		return nextWorkingEmployee.getId();
-	}
-
-	public void startWorkingStatus(Long id) {
-		repository.getById(id).setWorking(true);		
+		return updatePreviousNextEmployeeValues(createEmployee, working);
 	}
 }

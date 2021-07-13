@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,6 +47,16 @@ public class SnacksWorkController {
 			return ResponseEntity.ok(service.updateWork());
 		}catch(UpdateWorkingStatusException exception) {
 			return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PutMapping(path = "/ausent/{idEmployeeAusent}")
+	@Transactional
+	public ResponseEntity<SnacksWork> updateAusentStatus(@PathVariable Long idEmployeeAusent){
+		try {
+			return ResponseEntity.ok(service.updateAusentStatus(idEmployeeAusent));
+		}catch(UpdateWorkingStatusException exception) {
+			return new ResponseEntity("Employee update! Had no change in working status!", HttpStatus.OK);
 		}
 	}
 	

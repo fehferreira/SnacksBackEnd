@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ferreira.snacks.controller.form.EmployeeForm;
 import br.com.ferreira.snacks.exception.ImpossibleStartWorkException;
 import br.com.ferreira.snacks.exception.UpdateWorkingStatusException;
 import br.com.ferreira.snacks.model.Employee;
@@ -43,12 +44,34 @@ public class SnacksWorkService {
 		if(listWorks.isEmpty())
 			throw new UpdateWorkingStatusException("Can't update status without a previous SnacksWork!");
 
-		if(!listWorks.get(listWorks.size()-1).getDateStartWork().isBefore(LocalDateTime.now().minusDays(7L)))
-			throw new UpdateWorkingStatusException("Can't update status because this week's not over yet");
+		SnacksWork actualWork = listWorks.get(listWorks.size()-1);
+		Employee actualEmployeeWork = employeeService.findEmployeeDetails(actualWork.getIdWorkingEmployee());
+		
+		if(!actualWork.getDateStartWork().isBefore(LocalDateTime.now().minusDays(7L)))
+			if(!actualEmployeeWork.isAusent())
+				throw new UpdateWorkingStatusException("Can't update status because this week's not over yet");
 		
 		Long nextEmployeeId = employeeService
 				.updateWorkingStatus(listWorks.get(listWorks.size()-1).getIdWorkingEmployee());
 		return repository.save(new SnacksWork(nextEmployeeId));
 	}
 	
+	public SnacksWork updateAusentStatus(Long idEmployeeAusent) {
+		Employee ausentEmployee = employeeService.findEmployeeDetails(idEmployeeAusent);
+		ausentEmployee = employeeService.updateEmployee(
+				new EmployeeForm(ausentEmployee.getName(), ausentEmployee.isWorking(), 
+						!ausentEmployee.isAusent()), idEmployeeAusent);
+		
+		if(ausentEmployee.isAusent()) {
+			employeeService.updateRemoveEmployeeStatus(
+					ausentEmployee.getPreviousEmployeeId(), ausentEmployee.getNextEmployeeId());
+			if(ausentEmployee.isWorking())
+				employeeService.updateWorkingStatus(idEmployeeAusent);
+		}
+		
+		if(!ausentEmployee.isAusent())
+			employeeService.updatePreviousNextEmployeeValues(ausentEmployee, employeeService.findLastEmployee());
+		
+		return updateWork();
+	}	
 }
