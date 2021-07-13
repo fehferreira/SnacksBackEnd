@@ -55,8 +55,8 @@ public class SnacksWorkController {
 	public ResponseEntity<SnacksWork> updateAusentStatus(@PathVariable Long idEmployeeAusent){
 		try {
 			return ResponseEntity.ok(service.updateAusentStatus(idEmployeeAusent));
-		}catch(RuntimeException exception) {
-			return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}catch(UpdateWorkingStatusException exception) {
+			return new ResponseEntity("Employee update! Had no change in working status!", HttpStatus.OK);
 		}
 	}
 	
