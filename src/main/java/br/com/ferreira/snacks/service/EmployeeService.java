@@ -2,6 +2,7 @@ package br.com.ferreira.snacks.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -75,7 +76,7 @@ public class EmployeeService {
 		Employee nextWorkingEmployee = null;
 		
 		if(actualWorkingEmployee.getNextEmployeeId() == null)
-			nextWorkingEmployee = findAllEmployees().get(0);
+			nextWorkingEmployee = findEmployeeSorted().get(0);
 		else
 			nextWorkingEmployee = repository.getById(actualWorkingEmployee.getNextEmployeeId());
 		
@@ -96,7 +97,7 @@ public class EmployeeService {
 	}
 	
 	public Employee findLastEmployee() {
-		List<Employee> listEmployees = findAllEmployees();
+		List<Employee> listEmployees = findEmployeeSorted();
 		Optional<Employee> optional = listEmployees.stream().filter(e -> (e.getNextEmployeeId() == null) && 
 				(e.getPreviousEmployeeId() != null)).findFirst();
 		
@@ -136,5 +137,20 @@ public class EmployeeService {
 			return repository.save(createEmployee);
 		
 		return updatePreviousNextEmployeeValues(createEmployee, working);
+	}
+
+	public List<Employee> findEmployeeSorted() {
+		List<Employee> sortedList = findAllEmployees().stream().filter(e -> e.isAusent() == false)
+				.collect(Collectors.toList());
+		
+		sortedList.sort((e1,e2)->e1.compareTo(e2));
+		sortedList.sort((e1,e2)->e2.compareTo(e1));
+		
+		return sortedList;
+	}
+
+	public List<Employee> findEmployeeAusent() {
+		return findAllEmployees().stream().filter(e -> e.isAusent() == true)
+				.collect(Collectors.toList());
 	}
 }

@@ -51,4 +51,12 @@ public class Employee {
 	
 	@OneToMany
 	private List<SnacksWork> realizedWorks;
+
+	public int compareTo(Employee e2) {
+		if(this.nextEmployeeId == e2.getId())
+			return 1;
+		if(this.previousEmployeeId == e2.getId())
+			return -1;
+		return 0;
+	}
 }
