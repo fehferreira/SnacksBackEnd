@@ -2,6 +2,7 @@ package br.com.ferreira.snacks.controller;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,11 @@ public class SnacksWorkController {
 	
 	@GetMapping("/actual")
 	public ResponseEntity<SnacksWork> findActualWork(){
-		return ResponseEntity.ok(service.findActualWork());
+		try {
+			return ResponseEntity.ok(service.findActualWork());
+		}catch(EntityNotFoundException exception) {
+			return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@GetMapping(path = "/start")
