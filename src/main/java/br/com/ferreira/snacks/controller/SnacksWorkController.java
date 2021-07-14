@@ -30,6 +30,11 @@ public class SnacksWorkController {
 		return ResponseEntity.ok(service.findAllWorks());
 	}
 	
+	@GetMapping("/actual")
+	public ResponseEntity<SnacksWork> findActualWork(){
+		return ResponseEntity.ok(service.findActualWork());
+	}
+	
 	@GetMapping(path = "/start")
 	@Transactional
 	public ResponseEntity<SnacksWork> startWork(){
