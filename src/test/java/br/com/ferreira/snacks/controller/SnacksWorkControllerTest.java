@@ -1,6 +1,7 @@
 package br.com.ferreira.snacks.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -51,7 +52,7 @@ class SnacksWorkControllerTest {
 		mockMvc.perform(get(uri + "/start"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.idWork", is(2)))
-				.andExpect(jsonPath("$.dateStartWork", is(nowDate.toString())))
+				.andExpect(jsonPath("$.dateStartWork", containsString(nowDate.toLocalDate().toString())))
 				.andExpect(jsonPath("$.idWorkingEmployee", is(63)));
 	}
 	
@@ -73,7 +74,7 @@ class SnacksWorkControllerTest {
 		mockMvc.perform(get(uri + "/update"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.idWork", is(2)))
-				.andExpect(jsonPath("$.dateStartWork", is(nowDate.toString())))
+				.andExpect(jsonPath("$.dateStartWork", containsString(nowDate.toLocalDate().toString())))
 				.andExpect(jsonPath("$.idWorkingEmployee", is(2)));
 	}
 	
@@ -115,7 +116,7 @@ class SnacksWorkControllerTest {
 		mockMvc.perform(put(uri + "/ausent" + "/2"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.idWork", is(2)))
-				.andExpect(jsonPath("$.dateStartWork", is(nowDate.toString())))
+				.andExpect(jsonPath("$.dateStartWork", containsString(nowDate.toLocalDate().toString())))
 				.andExpect(jsonPath("$.idWorkingEmployee", is(3)));
 	}
 	

@@ -65,7 +65,7 @@ class SnacksWorkServiceTest {
 		Employee employee = new Employee(5L, "Felipe Ferreira", false, false, null, null);
 		
 		when(repositoryMock.save(any())).thenReturn(snacksWork);
-		when(serviceMock.findAllEmployees()).thenReturn(Arrays.asList(employee));
+		when(serviceMock.findEmployeeSorted()).thenReturn(Arrays.asList(employee));
 		when(serviceMock.findWorkingEmployee()).thenReturn(employee);
 		
 		SnacksWork actualWork = service.startWork();
