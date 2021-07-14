@@ -36,6 +36,16 @@ public class EmployeeController {
 		return ResponseEntity.ok(service.findAllEmployees().stream().map(EmployeeDTO::new).collect(Collectors.toList()));
 	}
 	
+	@GetMapping("/present")
+	public ResponseEntity<List<EmployeeDTO>> findEmployeeSorted(){
+		return ResponseEntity.ok(service.findEmployeeSorted().stream().map(EmployeeDTO::new).collect(Collectors.toList()));
+	}
+	
+	@GetMapping("/ausent")
+	public ResponseEntity<List<EmployeeDTO>> findEmployeeAusent(){
+		return ResponseEntity.ok(service.findEmployeeAusent().stream().map(EmployeeDTO::new).collect(Collectors.toList()));
+	}
+	
 	@PostMapping
 	@Transactional
 	public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody @Valid EmployeeForm form) {
