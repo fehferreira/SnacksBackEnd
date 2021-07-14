@@ -3,6 +3,8 @@ package br.com.ferreira.snacks.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,5 +75,13 @@ public class SnacksWorkService {
 			employeeService.updatePreviousNextEmployeeValues(ausentEmployee, employeeService.findLastEmployee());
 		
 		return updateWork();
-	}	
+	}
+
+	public SnacksWork findActualWork() {
+		List<SnacksWork> allWorks = findAllWorks();
+		if(allWorks.isEmpty())
+			throw new EntityNotFoundException();
+		return allWorks.get(allWorks.size()-1);
+	}
+
 }
